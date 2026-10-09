@@ -1,55 +1,49 @@
-﻿using PdfSharp.Pdf;
+using Espuma.Application.Common;
+using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
 
 namespace Espuma.Application.Services
 {
     public interface IPdfMergeService
     {
-        byte[] MergePdfsFromStreams(List<Stream> pdfStreams);
+        Task MergeAsync(IReadOnlyList<Stream> inputs, Stream output,
+            IProgress<double>? progress = null, CancellationToken cancellationToken = default);
     }
-    public class PdfMergeService : IPdfMergeService
+
+    public sealed class PdfMergeService : IPdfMergeService
     {
-        private readonly InterfaceIsPdf _validatePdf;
-        public PdfMergeService(InterfaceIsPdf interfaceIsPdf)
+        public Task MergeAsync(IReadOnlyList<Stream> inputs, Stream output,
+            IProgress<double>? progress = null, CancellationToken cancellationToken = default)
         {
-            _validatePdf = interfaceIsPdf;
-        }
-        public byte[] MergePdfsFromStreams(List<Stream> pdfStreams)
-        {
-            if (pdfStreams == null || pdfStreams.Count == 0)
-                throw new ArgumentException("No se proporcionaron los archivos PDF");
+            if (inputs.Count < 2)
+                throw new PdfOperationException(PdfErrorCode.NotEnoughFiles, "Se necesitan al menos dos archivos para unirlos.");
 
-            if (pdfStreams.Count == 1)
-                throw new ArgumentException("Se necesitan al menos dos archivos para poder unirlos");
-
-            using var outputDocument = new PdfDocument();
-
-            foreach (var pdfStream in pdfStreams)
+            return Task.Run(() =>
             {
-                if (!_validatePdf.ValidatePdf(pdfStream))
-                    throw new InvalidDataException("Uno de los archivos no es un PDF valido");
+                using var outputDocument = new PdfDocument();
 
-                pdfStream.Position = 0; // Importante: hay que resetear la posición
-
-                try
+                for (var i = 0; i < inputs.Count; i++)
                 {
-                    using var inputDocument = PdfReader.Open(pdfStream, PdfDocumentOpenMode.Import);
+                    cancellationToken.ThrowIfCancellationRequested();
 
-                    for (int i = 0; i < inputDocument.PageCount; i++)
+                    var stream = PdfInput.EnsureSeekable(inputs[i], out var ownsStream);
+                    try
                     {
-                        outputDocument.AddPage(inputDocument.Pages[i]);
+                        using var inputDocument = PdfInput.Open(stream, PdfDocumentOpenMode.Import);
+                        for (var page = 0; page < inputDocument.PageCount; page++)
+                            outputDocument.AddPage(inputDocument.Pages[page]);
                     }
-                }
-                catch
-                {
-                    throw new InvalidDataException("Uno de los PDFs esta corrupto o no es valido");
+                    finally
+                    {
+                        if (ownsStream) stream.Dispose();
+                    }
+
+                    progress?.Report((i + 1d) / inputs.Count);
                 }
 
-            }
-
-            using var stream = new MemoryStream();
-            outputDocument.Save(stream, false);
-            return stream.ToArray();
+                cancellationToken.ThrowIfCancellationRequested();
+                outputDocument.Save(output, false);
+            }, cancellationToken);
         }
     }
 }
