@@ -1,6 +1,8 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/Espuma.Application/Espuma.Application.csproj" />
+    <Project Path="src/Espuma.Desktop/Espuma.Desktop.csproj" />
+    <Project Path="src/Espuma.Presentation/Espuma.Presentation.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Espuma.Application.Tests/Espuma.Application.Tests.csproj" />

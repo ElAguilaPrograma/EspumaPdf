@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>EspumaPdf</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <PublishAot>true</PublishAot>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Desktop" />
+    <PackageReference Include="bblanchon.PDFium.Linux" />
+    <PackageReference Include="bblanchon.PDFium.Win32" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Espuma.Presentation\Espuma.Presentation.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,40 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Espuma.Presentation.ViewModels"
+             xmlns:c="using:Espuma.Presentation.Controls"
+             xmlns:conv="using:Espuma.Presentation.Converters"
+             x:Class="Espuma.Presentation.Views.HomeView"
+             x:DataType="vm:HomeViewModel">
+  <ScrollViewer>
+    <StackPanel Margin="32,28" Spacing="6">
+      <TextBlock Text="¿Qué quieres hacer hoy?" FontSize="24" FontWeight="SemiBold" />
+      <TextBlock Classes="muted" Text="Tus archivos se procesan en tu equipo, nunca salen de él." />
+
+      <ItemsControl ItemsSource="{Binding Tools}" Margin="-6,18,-6,0">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <WrapPanel />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:ToolDescriptor">
+            <Button Classes="card" Width="236" Height="138" Margin="6"
+                    Command="{Binding $parent[UserControl].((vm:HomeViewModel)DataContext).OpenToolCommand}"
+                    CommandParameter="{Binding}">
+              <StackPanel Spacing="10">
+                <Border Width="38" Height="38" CornerRadius="{StaticResource RadiusMedium}"
+                        Background="{DynamicResource AccentSoftBrush}" HorizontalAlignment="Left">
+                  <c:Icon Data="{Binding IconKey, Converter={x:Static conv:IconConverter.Instance}}" Size="20"
+                          Foreground="{DynamicResource AccentBrush}"
+                          HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+                <TextBlock Text="{Binding Title}" FontSize="15" FontWeight="SemiBold" />
+                <TextBlock Classes="muted" Text="{Binding Description}" TextWrapping="Wrap" FontSize="13" />
+              </StackPanel>
+            </Button>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

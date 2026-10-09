@@ -26,6 +26,7 @@ Requiere el [SDK de .NET 10](https://dotnet.microsoft.com/download).
 ```sh
 dotnet build EspumaPdf.slnx
 dotnet test --solution EspumaPdf.slnx
+dotnet run --project src/Espuma.Desktop
 ```
 
 ## Estructura
@@ -33,6 +34,8 @@ dotnet test --solution EspumaPdf.slnx
 ```
 src/
   Espuma.Application/         Casos de uso y motor PDF (sin dependencias de UI)
+  Espuma.Presentation/        Interfaz con Avalonia (vistas, view models y tema)
+  Espuma.Desktop/             Aplicación de escritorio para Linux y Windows
 tests/
   Espuma.Application.Tests/   Tests de los casos de uso
 ```

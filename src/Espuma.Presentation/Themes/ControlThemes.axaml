@@ -1,0 +1,77 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:c="using:Espuma.Presentation.Controls">
+
+  <ControlTheme x:Key="{x:Type c:ToolPage}" TargetType="c:ToolPage">
+    <Setter Property="Padding" Value="32,28" />
+    <Setter Property="Template">
+      <ControlTemplate>
+        <DockPanel Margin="{TemplateBinding Padding}">
+          <Grid DockPanel.Dock="Top" ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,24">
+            <Border Width="44" Height="44" CornerRadius="{StaticResource RadiusMedium}"
+                    Background="{DynamicResource AccentSoftBrush}" VerticalAlignment="Top">
+              <c:Icon Data="{TemplateBinding Icon}" Size="22" Foreground="{DynamicResource AccentBrush}"
+                      HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <StackPanel Grid.Column="1" Margin="14,0,16,0" Spacing="2" VerticalAlignment="Center">
+              <TextBlock Text="{TemplateBinding Title}" FontSize="20" FontWeight="SemiBold" />
+              <TextBlock Text="{TemplateBinding Description}" Foreground="{DynamicResource TextMutedBrush}"
+                         TextWrapping="Wrap" />
+            </StackPanel>
+            <ContentPresenter Grid.Column="2" Content="{TemplateBinding Actions}" VerticalAlignment="Center" />
+          </Grid>
+          <ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}" />
+        </DockPanel>
+      </ControlTemplate>
+    </Setter>
+  </ControlTheme>
+
+  <ControlTheme x:Key="{x:Type c:DropZone}" TargetType="c:DropZone">
+    <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="MinHeight" Value="120" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Panel>
+          <Rectangle Name="PART_Background" Fill="{TemplateBinding Background}"
+                     RadiusX="14" RadiusY="14" />
+          <Rectangle Name="PART_Border" Stroke="{DynamicResource BorderBrush}" StrokeThickness="2"
+                     StrokeDashArray="4,3" RadiusX="14" RadiusY="14" />
+          <StackPanel Spacing="10" Margin="24" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Border Name="PART_IconBadge" Width="52" Height="52" CornerRadius="26"
+                    Background="{DynamicResource AccentSoftBrush}" HorizontalAlignment="Center">
+              <c:Icon Data="{TemplateBinding Icon}" Size="24" Foreground="{DynamicResource AccentBrush}"
+                      HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <TextBlock Text="{TemplateBinding Title}" FontSize="16" FontWeight="SemiBold"
+                       HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" />
+            <TextBlock Text="{TemplateBinding Hint}" Foreground="{DynamicResource TextMutedBrush}"
+                       HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" />
+          </StackPanel>
+        </Panel>
+      </ControlTemplate>
+    </Setter>
+
+    <Style Selector="^:pointerover /template/ Rectangle#PART_Border">
+      <Setter Property="Stroke" Value="{DynamicResource AccentBrush}" />
+    </Style>
+    <Style Selector="^:focus-visible /template/ Rectangle#PART_Border">
+      <Setter Property="Stroke" Value="{DynamicResource AccentBrush}" />
+    </Style>
+    <Style Selector="^:dragover /template/ Rectangle#PART_Border">
+      <Setter Property="Stroke" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="StrokeDashArray" Value="{x:Null}" />
+    </Style>
+    <Style Selector="^:dragover /template/ Rectangle#PART_Background">
+      <Setter Property="Fill" Value="{DynamicResource AccentSoftBrush}" />
+    </Style>
+    <Style Selector="^:pressed">
+      <Setter Property="RenderTransform" Value="scale(0.99)" />
+    </Style>
+  </ControlTheme>
+
+</ResourceDictionary>
