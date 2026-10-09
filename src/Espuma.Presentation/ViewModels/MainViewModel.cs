@@ -6,7 +6,7 @@ namespace Espuma.Presentation.ViewModels
 {
     public sealed partial class MainViewModel : ViewModelBase
     {
-        public const string RepositoryUrl = "https://github.com/ElAguilaPrograma/PdfTools";
+        public const string RepositoryUrl = "https://github.com/ElAguilaPrograma/EspumaPdf";
 
         private readonly AppServices _services;
         private readonly HomeViewModel _home;
