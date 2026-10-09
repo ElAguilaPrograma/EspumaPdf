@@ -2,7 +2,7 @@
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
 
-namespace PdfToolsApi.Core.Services
+namespace Espuma.Application.Services
 {
     public interface IPdfTextService
     {

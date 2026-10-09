@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PdfToolsApi.Core.Services
+namespace Espuma.Application.Services
 {
     public class CustomFontResolver : IFontResolver
     {
@@ -23,7 +23,7 @@ namespace PdfToolsApi.Core.Services
             var assembly = Assembly.GetExecutingAssembly();
             var resourceName = faceName switch
             {
-                "Roboto#Regular" => "PdfToolsApi.Core.Resources.Fonts.Roboto-Regular.ttf",
+                "Roboto#Regular" => "Espuma.Application.Resources.Fonts.Roboto-Regular.ttf",
                 _ => throw new InvalidOperationException("Fuente no soportada")
             };
 

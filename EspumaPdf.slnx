@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Espuma.Application/Espuma.Application.csproj" />
+  </Folder>
+</Solution>

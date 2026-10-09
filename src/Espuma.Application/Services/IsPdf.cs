@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PdfToolsApi.Core.Services
+namespace Espuma.Application.Services
 {
     public interface InterfaceIsPdf
     {

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="PDFsharp" />
+    <PackageReference Include="Docnet.Core" />
+    <PackageReference Include="SixLabors.ImageSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Fonts\Roboto-Regular.ttf" />
+  </ItemGroup>
+
+</Project>

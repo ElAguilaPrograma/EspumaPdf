@@ -1,6 +1,6 @@
 ﻿using SixLabors.ImageSharp;
 
-namespace PdfToolsApi.Core.Services
+namespace Espuma.Application.Services
 {
     public interface IIsValidImage
     {

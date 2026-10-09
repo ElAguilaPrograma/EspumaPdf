@@ -4,7 +4,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System.IO.Compression;
 
-namespace PdfToolsApi.Core.Services
+namespace Espuma.Application.Services
 {
     public interface IPdfToImageService
     {
