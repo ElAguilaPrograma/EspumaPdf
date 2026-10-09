@@ -39,7 +39,8 @@ namespace Espuma.Presentation.ViewModels
             ToolKind.NumberPages => new NumberPagesViewModel(descriptor, services),
             ToolKind.ImageToPdf => new ImageToPdfViewModel(descriptor, services),
             ToolKind.PdfToImage => new PdfToImageViewModel(descriptor, services),
-            _ => new PlaceholderToolViewModel(descriptor, services)
+            ToolKind.Organize => new OrganizeViewModel(descriptor, services),
+            _ => throw new ArgumentOutOfRangeException(nameof(descriptor))
         };
 
         public void AddFiles(IReadOnlyList<IInputFile> files)
@@ -167,7 +168,4 @@ namespace Espuma.Presentation.ViewModels
             OnFilesChanged();
         }
     }
-
-    public sealed class PlaceholderToolViewModel(ToolDescriptor descriptor, AppServices services)
-        : ToolViewModel(descriptor, services);
 }

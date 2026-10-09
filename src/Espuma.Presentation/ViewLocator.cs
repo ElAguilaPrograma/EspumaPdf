@@ -17,7 +17,7 @@ namespace Espuma.Presentation
             NumberPagesViewModel => new NumberPagesView(),
             ImageToPdfViewModel => new ImageToPdfView(),
             PdfToImageViewModel => new PdfToImageView(),
-            PlaceholderToolViewModel => new PlaceholderToolView(),
+            OrganizeViewModel => new OrganizeView(),
             _ => new TextBlock { Text = $"Vista no encontrada: {data?.GetType().Name}" }
         };
 

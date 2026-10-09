@@ -1,3 +1,4 @@
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Espuma.Application.Common;
@@ -28,6 +29,20 @@ namespace Espuma.Presentation.Thumbnails
 
         public double RotationAngle => (int)Rotation;
 
+        public ITransform RotationTransform => new RotateTransform(RotationAngle);
+
+        private bool IsSideways => Rotation is PageRotation.Clockwise90 or PageRotation.Clockwise270;
+
+        /// <summary>Size of the page as displayed after <see cref="Rotation"/>, fitted in the thumbnail cell.</summary>
+        public double BoxWidth => FittedBox().Width;
+
+        public double BoxHeight => FittedBox().Height;
+
+        /// <summary>Size of the unrotated image that, once rotated, fills the box.</summary>
+        public double ImageWidth => IsSideways ? BoxHeight : BoxWidth;
+
+        public double ImageHeight => IsSideways ? BoxWidth : BoxHeight;
+
         [ObservableProperty]
         public partial Bitmap? Thumbnail { get; internal set; }
 
@@ -41,10 +56,17 @@ namespace Espuma.Presentation.Thumbnails
         public partial string? Badge { get; set; }
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(RotationAngle))]
+        [NotifyPropertyChangedFor(nameof(RotationAngle), nameof(RotationTransform), nameof(BoxWidth), nameof(BoxHeight), nameof(ImageWidth), nameof(ImageHeight))]
         public partial PageRotation Rotation { get; set; }
 
         internal bool IsInView { get; private set; }
+
+        private (double Width, double Height) FittedBox()
+        {
+            var aspect = IsSideways ? 1 / AspectRatio : AspectRatio;
+            var height = DisplayWidth * aspect;
+            return height <= MaxDisplayHeight ? (DisplayWidth, height) : (MaxDisplayHeight / aspect, MaxDisplayHeight);
+        }
 
         public void SetInView(bool inView)
         {

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -7,9 +8,14 @@ using Avalonia.VisualTree;
 
 namespace Espuma.Presentation.Behaviors
 {
+    /// <summary>A request to move the item at <see cref="From"/> to <see cref="To"/>.</summary>
+    public sealed record ReorderMove(int From, int To);
+
     /// <summary>
-    /// Lets the user reorder the items of an <see cref="ItemsControl"/> by dragging them. The items source must be
-    /// an <see cref="IList"/>. Dragging does not start on buttons, so actions inside the items keep working.
+    /// Lets the user reorder the items of an <see cref="ItemsControl"/> by dragging them. Moves are sent to
+    /// <c>MoveCommand</c> as a <see cref="ReorderMove"/> when it is set; otherwise the items source, which must be an
+    /// <see cref="IList"/>, is changed directly. Dragging does not start on buttons, so actions inside the items keep
+    /// working.
     /// </summary>
     public static class Reorder
     {
@@ -19,6 +25,9 @@ namespace Espuma.Presentation.Behaviors
 
         public static readonly AttachedProperty<bool> IsEnabledProperty =
             AvaloniaProperty.RegisterAttached<ItemsControl, bool>("IsEnabled", typeof(Reorder));
+
+        public static readonly AttachedProperty<ICommand?> MoveCommandProperty =
+            AvaloniaProperty.RegisterAttached<ItemsControl, ICommand?>("MoveCommand", typeof(Reorder));
 
         private static readonly AttachedProperty<DragStart?> DragStartProperty =
             AvaloniaProperty.RegisterAttached<ItemsControl, DragStart?>("DragStart", typeof(Reorder));
@@ -34,6 +43,10 @@ namespace Espuma.Presentation.Behaviors
         public static bool GetIsEnabled(ItemsControl control) => control.GetValue(IsEnabledProperty);
 
         public static void SetIsEnabled(ItemsControl control, bool value) => control.SetValue(IsEnabledProperty, value);
+
+        public static ICommand? GetMoveCommand(ItemsControl control) => control.GetValue(MoveCommandProperty);
+
+        public static void SetMoveCommand(ItemsControl control, ICommand? value) => control.SetValue(MoveCommandProperty, value);
 
         private static void OnIsEnabledChanged(ItemsControl control, AvaloniaPropertyChangedEventArgs e)
         {
@@ -102,7 +115,7 @@ namespace Espuma.Presentation.Behaviors
 
         private static void OnDrop(object? sender, DragEventArgs e)
         {
-            if (sender is not ItemsControl control || control.ItemsSource is not IList items)
+            if (sender is not ItemsControl control)
                 return;
 
             SetDropTarget(control, null);
@@ -110,13 +123,24 @@ namespace Espuma.Presentation.Behaviors
                 return;
 
             var to = IndexAt(control, e.Source as Visual);
-            if (to < 0 || from == to || from >= items.Count)
+            if (to < 0 || from == to || from >= control.ItemCount)
                 return;
 
-            var item = items[from];
-            items.RemoveAt(from);
-            items.Insert(to, item);
             e.Handled = true;
+            if (GetMoveCommand(control) is { } command)
+            {
+                var move = new ReorderMove(from, to);
+                if (command.CanExecute(move))
+                    command.Execute(move);
+                return;
+            }
+
+            if (control.ItemsSource is IList items)
+            {
+                var item = items[from];
+                items.RemoveAt(from);
+                items.Insert(to, item);
+            }
         }
 
         private static int IndexAt(ItemsControl control, Visual? visual)

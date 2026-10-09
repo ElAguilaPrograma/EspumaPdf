@@ -1,0 +1,114 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Espuma.Presentation.ViewModels"
+             xmlns:th="using:Espuma.Presentation.Thumbnails"
+             xmlns:c="using:Espuma.Presentation.Controls"
+             xmlns:b="using:Espuma.Presentation.Behaviors"
+             xmlns:v="using:Espuma.Presentation.Views"
+             xmlns:conv="using:Espuma.Presentation.Converters"
+             x:Class="Espuma.Presentation.Views.OrganizeView"
+             x:DataType="vm:OrganizeViewModel"
+             Focusable="True">
+  <UserControl.KeyBindings>
+    <KeyBinding Gesture="Delete" Command="{Binding DeleteSelectionCommand}" />
+    <KeyBinding Gesture="Ctrl+Z" Command="{Binding UndoCommand}" />
+    <KeyBinding Gesture="Ctrl+Y" Command="{Binding RedoCommand}" />
+    <KeyBinding Gesture="Ctrl+Shift+Z" Command="{Binding RedoCommand}" />
+    <KeyBinding Gesture="Ctrl+A" Command="{Binding SelectAllCommand}" />
+    <KeyBinding Gesture="Ctrl+R" Command="{Binding RotateSelectionRightCommand}" />
+    <KeyBinding Gesture="Ctrl+Shift+R" Command="{Binding RotateSelectionLeftCommand}" />
+    <KeyBinding Gesture="Escape" Command="{Binding ClearSelectionCommand}" />
+  </UserControl.KeyBindings>
+
+  <c:ToolPage Icon="{Binding Descriptor.IconKey, Converter={x:Static conv:IconConverter.Instance}}"
+              Title="{Binding Descriptor.Title}"
+              Description="{Binding Descriptor.Description}">
+    <c:ToolPage.Actions>
+      <Button Classes="primary" Content="Guardar PDF" Command="{Binding SaveCommand}"
+              IsVisible="{Binding HasDocument}" />
+    </c:ToolPage.Actions>
+    <Panel>
+      <c:DropZone Icon="{StaticResource Icon.Upload}" Title="{Binding DropTitle}" Hint="{Binding DropHint}"
+                  Command="{Binding BrowseCommand}" FilesDroppedCommand="{Binding AddDroppedFilesCommand}"
+                  VerticalAlignment="Stretch" IsVisible="{Binding !HasFiles}" />
+      <DockPanel IsVisible="{Binding HasFiles}">
+        <v:DocumentBar DockPanel.Dock="Top" Margin="0,0,0,12" />
+        <Border DockPanel.Dock="Top" Classes="panel" Margin="0,0,0,12" IsVisible="{Binding HasDocument}">
+          <Grid ColumnDefinitions="*,Auto">
+            <StackPanel VerticalAlignment="Center" Spacing="2">
+              <TextBlock Text="{Binding StatusText}" />
+              <TextBlock Classes="caption" TextWrapping="Wrap"
+                         Text="Arrastra para reordenar · Ctrl/Shift para elegir varias · Supr quita · Ctrl+Z deshace" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
+              <Button Classes="icon" Command="{Binding UndoCommand}" ToolTip.Tip="Deshacer (Ctrl+Z)">
+                <c:Icon Data="{StaticResource Icon.Undo}" Size="18" />
+              </Button>
+              <Button Classes="icon" Command="{Binding RedoCommand}" ToolTip.Tip="Rehacer (Ctrl+Y)">
+                <c:Icon Data="{StaticResource Icon.Redo}" Size="18" />
+              </Button>
+              <Border Width="1" Margin="6,4" Background="{DynamicResource BorderBrush}" />
+              <Button Classes="icon" Command="{Binding RotateSelectionLeftCommand}"
+                      ToolTip.Tip="Girar selección a la izquierda (Ctrl+Shift+R)">
+                <c:Icon Data="{StaticResource Icon.RotateCcw}" Size="18" />
+              </Button>
+              <Button Classes="icon" Command="{Binding RotateSelectionRightCommand}"
+                      ToolTip.Tip="Girar selección a la derecha (Ctrl+R)">
+                <c:Icon Data="{StaticResource Icon.RotateCw}" Size="18" />
+              </Button>
+              <Button Classes="icon danger" Command="{Binding DeleteSelectionCommand}" ToolTip.Tip="Quitar selección (Supr)">
+                <c:Icon Data="{StaticResource Icon.Delete}" Size="18" />
+              </Button>
+              <Border Width="1" Margin="6,4" Background="{DynamicResource BorderBrush}" />
+              <Button Classes="ghost" Content="Restablecer" Command="{Binding ResetCommand}" />
+            </StackPanel>
+          </Grid>
+        </Border>
+
+        <ScrollViewer>
+          <ItemsControl Name="PageList" Classes="organizing" ItemsSource="{Binding Items}" Margin="-5,0"
+                        b:Reorder.IsEnabled="True" b:Reorder.MoveCommand="{Binding MoveCommand}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="th:PageThumbnailViewModel">
+                <th:ThumbnailHost Classes="page" Classes.selected="{Binding IsSelected}">
+                  <StackPanel Spacing="6">
+                    <Panel Width="132" Height="200">
+                      <LayoutTransformControl LayoutTransform="{Binding RotationTransform}"
+                                              HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Panel Width="{Binding ImageWidth}" Height="{Binding ImageHeight}">
+                          <Border Classes="paper" />
+                          <Image Source="{Binding Thumbnail}" Stretch="Fill" />
+                        </Panel>
+                      </LayoutTransformControl>
+                      <StackPanel Classes="pageactions" Orientation="Horizontal" Spacing="4" Margin="0,0,0,6"
+                                  HorizontalAlignment="Center" VerticalAlignment="Bottom">
+                        <Button Classes="pageaction" ToolTip.Tip="Girar a la izquierda" CommandParameter="{Binding}"
+                                Command="{Binding $parent[UserControl].((vm:OrganizeViewModel)DataContext).RotateLeftCommand}">
+                          <c:Icon Data="{StaticResource Icon.RotateCcw}" Size="16" />
+                        </Button>
+                        <Button Classes="pageaction" ToolTip.Tip="Girar a la derecha" CommandParameter="{Binding}"
+                                Command="{Binding $parent[UserControl].((vm:OrganizeViewModel)DataContext).RotateRightCommand}">
+                          <c:Icon Data="{StaticResource Icon.RotateCw}" Size="16" />
+                        </Button>
+                        <Button Classes="pageaction danger" ToolTip.Tip="Quitar página" CommandParameter="{Binding}"
+                                Command="{Binding $parent[UserControl].((vm:OrganizeViewModel)DataContext).DeletePageCommand}">
+                          <c:Icon Data="{StaticResource Icon.Delete}" Size="16" />
+                        </Button>
+                      </StackPanel>
+                    </Panel>
+                    <TextBlock Classes="caption" Text="{Binding PageNumber}" HorizontalAlignment="Center" />
+                  </StackPanel>
+                </th:ThumbnailHost>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+      </DockPanel>
+    </Panel>
+  </c:ToolPage>
+</UserControl>

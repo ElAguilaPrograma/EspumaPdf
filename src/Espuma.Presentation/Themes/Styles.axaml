@@ -191,6 +191,41 @@
     <Setter Property="Opacity" Value="0.45" />
   </Style>
 
+  <Style Selector="ItemsControl.organizing th|ThumbnailHost.page">
+    <Setter Property="Cursor" Value="SizeAll" />
+  </Style>
+  <Style Selector="ItemsControl.organizing th|ThumbnailHost.page:pointerover">
+    <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+  </Style>
+  <Style Selector="ItemsControl.organizing th|ThumbnailHost.page.selected">
+    <Setter Property="Background" Value="{DynamicResource AccentSoftBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+  </Style>
+  <Style Selector="ItemsControl.organizing .droptarget th|ThumbnailHost.page">
+    <Setter Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
+    <Setter Property="Background" Value="{DynamicResource AccentSoftBrush}" />
+  </Style>
+  <Style Selector="th|ThumbnailHost.page StackPanel.pageactions">
+    <Setter Property="IsVisible" Value="False" />
+  </Style>
+  <Style Selector="th|ThumbnailHost.page:pointerover StackPanel.pageactions">
+    <Setter Property="IsVisible" Value="True" />
+  </Style>
+  <Style Selector="Button.pageaction">
+    <Setter Property="Background" Value="#E61D2027" />
+    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+    <Setter Property="Padding" Value="6" />
+    <Setter Property="Cursor" Value="Hand" />
+  </Style>
+  <Style Selector="Button.pageaction:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource AccentSoftBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+  </Style>
+  <Style Selector="Button.pageaction.danger:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource DangerSoftBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
+  </Style>
+
   <Style Selector="Border.fileitem">
     <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
     <Setter Property="BorderBrush" Value="Transparent" />
