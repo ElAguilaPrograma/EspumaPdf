@@ -25,11 +25,14 @@ Requiere el [SDK de .NET 10](https://dotnet.microsoft.com/download).
 
 ```sh
 dotnet build EspumaPdf.slnx
+dotnet test --solution EspumaPdf.slnx
 ```
 
 ## Estructura
 
 ```
 src/
-  Espuma.Application/   Casos de uso y motor PDF (sin dependencias de UI)
+  Espuma.Application/         Casos de uso y motor PDF (sin dependencias de UI)
+tests/
+  Espuma.Application.Tests/   Tests de los casos de uso
 ```

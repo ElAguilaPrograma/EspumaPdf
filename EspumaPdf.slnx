@@ -2,4 +2,7 @@
   <Folder Name="/src/">
     <Project Path="src/Espuma.Application/Espuma.Application.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Espuma.Application.Tests/Espuma.Application.Tests.csproj" />
+  </Folder>
 </Solution>
