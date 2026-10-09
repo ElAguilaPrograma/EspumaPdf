@@ -23,10 +23,8 @@
 
         <DockPanel Margin="10,16">
           <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="10" Margin="6,0,0,20">
-            <Border Width="32" Height="32" CornerRadius="9" Background="{DynamicResource AccentBrush}">
-              <c:Icon Data="{StaticResource Icon.File}" Size="18" Foreground="{DynamicResource OnAccentBrush}"
-                      HorizontalAlignment="Center" VerticalAlignment="Center" />
-            </Border>
+            <Image Source="avares://Espuma.Presentation/Assets/icon.png" Width="34" Height="34"
+                   RenderOptions.BitmapInterpolationMode="HighQuality" />
             <TextBlock Text="EspumaPdf" FontSize="17" FontWeight="SemiBold" VerticalAlignment="Center"
                        IsVisible="{Binding !IsSidebarCompact}" />
           </StackPanel>

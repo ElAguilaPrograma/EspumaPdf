@@ -2,6 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="Espuma.Presentation.Views.MainWindow"
         Title="EspumaPdf"
+        Icon="avares://Espuma.Presentation/Assets/icon.png"
         Width="1100" Height="650"
         MinWidth="480" MinHeight="420"
         WindowStartupLocation="CenterScreen"
