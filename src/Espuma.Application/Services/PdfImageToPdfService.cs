@@ -1,123 +1,89 @@
-﻿using PdfSharp;
+using Espuma.Application.Common;
+using PdfSharp;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 
 namespace Espuma.Application.Services
 {
+    public enum ImagePageLayout
+    {
+        /// <summary>Each page takes the size of its image (1 pixel = 1 point).</summary>
+        OriginalSize,
+
+        /// <summary>A4 pages with the image scaled to fit and centered.</summary>
+        FitToA4
+    }
+
     public interface IPdfImageToPdfService
     {
-        byte[] ConvertImagesToPdf(List<Stream> imagesStreams);
-        byte[] ConvertImagesToPdfFixedPage(List<Stream> imagesStreams);
-        byte[] ConvertImageToPdf(Stream inputImage);
+        Task ConvertAsync(IReadOnlyList<Stream> images, Stream output, ImagePageLayout layout,
+            IProgress<double>? progress = null, CancellationToken cancellationToken = default);
     }
-    public class PdfImageToPdfService : IPdfImageToPdfService
+
+    public sealed class PdfImageToPdfService : IPdfImageToPdfService
     {
-        private readonly IIsValidImage _isValidImage;
-        public PdfImageToPdfService(IIsValidImage isValidImage)
+        /// <summary>Largest page side most PDF viewers accept (200 inches).</summary>
+        private const double MaxPageSide = 14400;
+
+        public Task ConvertAsync(IReadOnlyList<Stream> images, Stream output, ImagePageLayout layout,
+            IProgress<double>? progress = null, CancellationToken cancellationToken = default)
         {
-            _isValidImage = isValidImage;
+            if (images.Count == 0)
+                throw new PdfOperationException(PdfErrorCode.NotEnoughFiles, "No se proporcionaron imágenes.");
+
+            return Task.Run(() =>
+            {
+                var ownedStreams = new List<Stream>();
+                try
+                {
+                    using var document = new PdfDocument();
+
+                    for (var i = 0; i < images.Count; i++)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                        var prepared = ImageInput.PrepareForPdf(images[i], out var ownsStream);
+                        if (ownsStream) ownedStreams.Add(prepared);
+
+                        using var image = XImage.FromStream(prepared);
+                        var page = document.AddPage();
+
+                        if (layout == ImagePageLayout.FitToA4)
+                        {
+                            page.Size = PageSize.A4;
+                            DrawFitted(page, image);
+                        }
+                        else
+                        {
+                            var scale = Math.Min(1, MaxPageSide / Math.Max(image.PixelWidth, image.PixelHeight));
+                            page.Width = XUnit.FromPoint(image.PixelWidth * scale);
+                            page.Height = XUnit.FromPoint(image.PixelHeight * scale);
+                            using var gfx = XGraphics.FromPdfPage(page);
+                            gfx.DrawImage(image, 0, 0, page.Width.Point, page.Height.Point);
+                        }
+
+                        progress?.Report((i + 1d) / images.Count);
+                    }
+
+                    document.Save(output, false);
+                }
+                finally
+                {
+                    foreach (var stream in ownedStreams)
+                        stream.Dispose();
+                }
+            }, cancellationToken);
         }
 
-        public byte[] ConvertImageToPdf(Stream inputImage)
+        private static void DrawFitted(PdfPage page, XImage image)
         {
-            if (inputImage == null || inputImage.Length == 0)
-                throw new ArgumentException("No se proporcionó el archivo PDF");
-
-            if (!_isValidImage.ValidateImage(inputImage))
-                throw new InvalidDataException("El archivo no es una image valida");
-
-            using var document = new PdfDocument();
-            var page = document.AddPage();
-
             using var gfx = XGraphics.FromPdfPage(page);
-            using var image = XImage.FromStream(inputImage);
-
-            // tamaño de la pagina segun el tamaño de la imagen
-            page.Width = XUnit.FromPoint(image.PixelWidth);
-            page.Height = XUnit.FromPoint(image.PixelHeight);
-
-            gfx.DrawImage(image, 0, 0, image.PixelWidth, image.PixelHeight);
-
-            using var stream = new MemoryStream();
-            document.Save(stream);
-            return stream.ToArray();
-        }
-
-        public byte[] ConvertImagesToPdf(List<Stream> imagesStreams)
-        {
-            using var document = new PdfDocument();
-
-            foreach (var imageStream in imagesStreams)
-            {
-                if (imageStream == null || imageStream.Length == 0)
-                    throw new ArgumentException("No se proporcionó el archivo PDF");
-
-                if (!_isValidImage.ValidateImage(imageStream))
-                    throw new InvalidDataException("El archivo no es una image valida");
-
-                imageStream.Position = 0;
-                var page = document.AddPage();
-
-                using var image = XImage.FromStream(imageStream);
-
-                page.Width = XUnit.FromPoint(image.PixelWidth);
-                page.Height = XUnit.FromPoint(image.PixelHeight);
-
-                using var gfx = XGraphics.FromPdfPage(page);
-                gfx.DrawImage(image, 0, 0, page.Width.Point, page.Height.Point);
-            }
-
-            using var stream = new MemoryStream();
-            document.Save(stream);
-            return stream.ToArray();
-        }
-
-        public byte[] ConvertImagesToPdfFixedPage(List<Stream> imagesStreams)
-        {
-            if (imagesStreams == null || imagesStreams.Count == 0)
-                throw new ArgumentException("No se proporcionaron imagenes");
-            using var document = new PdfDocument();
-
-            foreach (var imageStream in imagesStreams)
-            {
-                if (imageStream == null || imageStream.Length == 0)
-                    throw new ArgumentException("No se proporcionó el archivo PDF");
-
-                if (!_isValidImage.ValidateImage(imageStream))
-                    throw new InvalidDataException("El archivo no es una image valida");
-
-                imageStream.Position = 0;
-
-                var page = document.AddPage();
-                page.Size = PageSize.A4;
-
-                using var gfx = XGraphics.FromPdfPage(page);
-                using var image = XImage.FromStream(imageStream);
-
-                double pageWidth = page.Width.Point;
-                double pageHeight = page.Height.Point;
-
-                double imgWidth = image.PixelWidth;
-                double imgHeight = image.PixelHeight;
-
-                double scaleX = pageWidth / imgWidth;
-                double scaleY = pageHeight / imgHeight;
-                double scale = Math.Min(scaleX, scaleY);
-
-                double drawWidth = imgWidth * scale;
-                double drawHeight = imgHeight * scale;
-
-                double x = (pageWidth - drawWidth) / 2;
-                double y = (pageHeight - drawHeight) / 2;
-
-                gfx.DrawImage(image, x, y, drawWidth, drawHeight);
-            }
-
-            using var stream = new MemoryStream();
-            document.Save(stream);
-            return stream.ToArray();
+            var pageWidth = page.Width.Point;
+            var pageHeight = page.Height.Point;
+            var scale = Math.Min(pageWidth / image.PixelWidth, pageHeight / image.PixelHeight);
+            var width = image.PixelWidth * scale;
+            var height = image.PixelHeight * scale;
+            gfx.DrawImage(image, (pageWidth - width) / 2, (pageHeight - height) / 2, width, height);
         }
     }
 }
