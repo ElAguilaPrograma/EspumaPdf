@@ -8,6 +8,10 @@
     <PublishAot>true</PublishAot>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <StripSymbols>true</StripSymbols>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Avalonia.Desktop" />
     <PackageReference Include="bblanchon.PDFium.Linux" />

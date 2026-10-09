@@ -5,6 +5,8 @@
 [Rr]elease/
 [Pp]ublish/
 artifacts/
+dist/
+*.AppImage
 *.dbg
 
 # Tests and coverage

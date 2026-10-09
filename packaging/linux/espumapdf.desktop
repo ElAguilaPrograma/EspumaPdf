@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=EspumaPdf
+GenericName=Herramientas PDF
+Comment=Une, organiza, divide y convierte PDF en tu equipo
+Exec=EspumaPdf
+Icon=espumapdf
+Terminal=false
+Categories=Office;
+Keywords=pdf;unir;combinar;organizar;rotar;extraer;numerar;imagen;
+StartupWMClass=EspumaPdf
