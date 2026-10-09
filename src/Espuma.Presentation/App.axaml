@@ -14,6 +14,7 @@
         <ResourceInclude Source="avares://Espuma.Presentation/Themes/Colors.axaml" />
         <ResourceInclude Source="avares://Espuma.Presentation/Themes/Icons.axaml" />
         <ResourceInclude Source="avares://Espuma.Presentation/Themes/ControlThemes.axaml" />
+        <ResourceInclude Source="avares://Espuma.Presentation/Themes/Templates.axaml" />
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>

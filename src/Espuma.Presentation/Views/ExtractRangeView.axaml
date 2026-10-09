@@ -1,0 +1,48 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Espuma.Presentation.ViewModels"
+             xmlns:c="using:Espuma.Presentation.Controls"
+             xmlns:b="using:Espuma.Presentation.Behaviors"
+             xmlns:v="using:Espuma.Presentation.Views"
+             xmlns:conv="using:Espuma.Presentation.Converters"
+             x:Class="Espuma.Presentation.Views.ExtractRangeView"
+             x:DataType="vm:ExtractRangeViewModel">
+  <c:ToolPage Icon="{Binding Descriptor.IconKey, Converter={x:Static conv:IconConverter.Instance}}"
+              Title="{Binding Descriptor.Title}"
+              Description="{Binding Descriptor.Description}">
+    <c:ToolPage.Actions>
+      <Button Classes="primary" Content="{Binding ActionText}" Command="{Binding ExtractCommand}"
+              IsVisible="{Binding HasDocument}" />
+    </c:ToolPage.Actions>
+    <Panel>
+      <c:DropZone Icon="{StaticResource Icon.Upload}" Title="{Binding DropTitle}" Hint="{Binding DropHint}"
+                  Command="{Binding BrowseCommand}" FilesDroppedCommand="{Binding AddDroppedFilesCommand}"
+                  VerticalAlignment="Stretch" IsVisible="{Binding !HasFiles}" />
+      <DockPanel IsVisible="{Binding HasFiles}">
+        <v:DocumentBar DockPanel.Dock="Top" Margin="0,0,0,12" />
+        <Border DockPanel.Dock="Top" Classes="panel" Margin="0,0,0,12" IsVisible="{Binding HasDocument}">
+          <WrapPanel ItemSpacing="12" LineSpacing="8">
+            <TextBlock Classes="label" Text="Desde la página" />
+            <NumericUpDown Value="{Binding FirstPage}" Minimum="1" Maximum="{Binding PageCount}" Increment="1"
+                           FormatString="0" ParsingNumberStyle="Integer" Width="130" />
+            <TextBlock Classes="label" Text="hasta la" />
+            <NumericUpDown Value="{Binding LastPage}" Minimum="1" Maximum="{Binding PageCount}" Increment="1"
+                           FormatString="0" ParsingNumberStyle="Integer" Width="130" />
+            <TextBlock Classes="caption" VerticalAlignment="Center" TextWrapping="Wrap"
+                       Text="También puedes hacer clic en una página, y con Shift extender el rango." />
+          </WrapPanel>
+        </Border>
+        <ScrollViewer>
+          <ItemsControl Name="PageList" Classes="clickable range" ItemsSource="{Binding Pages}"
+                        ItemTemplate="{StaticResource PageThumbnailTemplate}" Margin="-5,0">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+          </ItemsControl>
+        </ScrollViewer>
+      </DockPanel>
+    </Panel>
+  </c:ToolPage>
+</UserControl>

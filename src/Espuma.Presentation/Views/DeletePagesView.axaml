@@ -1,0 +1,47 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Espuma.Presentation.ViewModels"
+             xmlns:c="using:Espuma.Presentation.Controls"
+             xmlns:b="using:Espuma.Presentation.Behaviors"
+             xmlns:v="using:Espuma.Presentation.Views"
+             xmlns:conv="using:Espuma.Presentation.Converters"
+             x:Class="Espuma.Presentation.Views.DeletePagesView"
+             x:DataType="vm:DeletePagesViewModel">
+  <c:ToolPage Icon="{Binding Descriptor.IconKey, Converter={x:Static conv:IconConverter.Instance}}"
+              Title="{Binding Descriptor.Title}"
+              Description="{Binding Descriptor.Description}">
+    <c:ToolPage.Actions>
+      <Button Classes="primary" Content="{Binding ActionText}" Command="{Binding DeleteCommand}"
+              IsVisible="{Binding HasDocument}" />
+    </c:ToolPage.Actions>
+    <Panel>
+      <c:DropZone Icon="{StaticResource Icon.Upload}" Title="{Binding DropTitle}" Hint="{Binding DropHint}"
+                  Command="{Binding BrowseCommand}" FilesDroppedCommand="{Binding AddDroppedFilesCommand}"
+                  VerticalAlignment="Stretch" IsVisible="{Binding !HasFiles}" />
+      <DockPanel IsVisible="{Binding HasFiles}">
+        <v:DocumentBar DockPanel.Dock="Top" Margin="0,0,0,12" />
+        <Border DockPanel.Dock="Top" Classes="panel" Margin="0,0,0,12" IsVisible="{Binding HasDocument}">
+          <Grid ColumnDefinitions="*,Auto">
+            <StackPanel VerticalAlignment="Center" Spacing="2">
+              <TextBlock Text="{Binding SelectionText}" TextWrapping="Wrap" />
+              <TextBlock Classes="caption" Foreground="{DynamicResource DangerBrush}"
+                         Text="No puedes eliminar todas las páginas." IsVisible="{Binding DeletesEverything}" />
+            </StackPanel>
+            <Button Grid.Column="1" Classes="ghost" Content="Desmarcar todo" Command="{Binding ClearSelectionCommand}"
+                    IsVisible="{Binding HasSelection}" />
+          </Grid>
+        </Border>
+        <ScrollViewer>
+          <ItemsControl Name="PageList" Classes="clickable marking" ItemsSource="{Binding Pages}"
+                        ItemTemplate="{StaticResource PageThumbnailTemplate}" Margin="-5,0">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+          </ItemsControl>
+        </ScrollViewer>
+      </DockPanel>
+    </Panel>
+  </c:ToolPage>
+</UserControl>

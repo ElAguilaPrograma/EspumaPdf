@@ -18,7 +18,10 @@ namespace Espuma.Presentation
 
             var services = new AppServices(
                 new FileDialogService(GetTopLevel),
-                uri => GetTopLevel()?.Launcher.LaunchUriAsync(uri) ?? Task.FromResult(false));
+                uri => GetTopLevel()?.Launcher.LaunchUriAsync(uri) ?? Task.FromResult(false),
+                file => file is StorageOutputFile storage && GetTopLevel() is { } topLevel
+                    ? topLevel.Launcher.LaunchFileAsync(storage.File)
+                    : Task.FromResult(false));
             mainView.DataContext = new MainViewModel(services);
 
             switch (ApplicationLifetime)

@@ -11,7 +11,13 @@ namespace Espuma.Presentation
         public Control Build(object? data) => data switch
         {
             HomeViewModel => new HomeView(),
-            ToolViewModel => new ToolView(),
+            MergeViewModel => new MergeView(),
+            ExtractRangeViewModel => new ExtractRangeView(),
+            DeletePagesViewModel => new DeletePagesView(),
+            NumberPagesViewModel => new NumberPagesView(),
+            ImageToPdfViewModel => new ImageToPdfView(),
+            PdfToImageViewModel => new PdfToImageView(),
+            PlaceholderToolViewModel => new PlaceholderToolView(),
             _ => new TextBlock { Text = $"Vista no encontrada: {data?.GetType().Name}" }
         };
 

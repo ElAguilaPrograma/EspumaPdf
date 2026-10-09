@@ -7,6 +7,9 @@ namespace Espuma.Presentation.Services
     {
         string Name { get; }
 
+        /// <summary>Location of the file, when the platform exposes one.</summary>
+        Uri? Path { get; }
+
         Task<Stream> OpenReadAsync();
 
         Task<ulong?> GetSizeAsync();
@@ -15,6 +18,8 @@ namespace Espuma.Presentation.Services
     public sealed class StorageInputFile(IStorageFile file) : IInputFile
     {
         public string Name => file.Name;
+
+        public Uri? Path => file.Path;
 
         public Task<Stream> OpenReadAsync() => file.OpenReadAsync();
 

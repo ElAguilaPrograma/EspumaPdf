@@ -8,7 +8,7 @@ namespace Espuma.Presentation.Services
         Task<IReadOnlyList<IInputFile>> OpenAsync(FileKind kind, bool allowMultiple);
 
         /// <returns>The chosen file, or null when the user cancels.</returns>
-        Task<IStorageFile?> SaveAsync(FileKind kind, string suggestedName);
+        Task<IOutputFile?> SaveAsync(FileKind kind, string suggestedName);
     }
 
     public sealed class FileDialogService(Func<TopLevel?> topLevel) : IFileDialogService
@@ -25,10 +25,10 @@ namespace Espuma.Presentation.Services
             return files.Select(file => (IInputFile)new StorageInputFile(file)).ToList();
         }
 
-        public async Task<IStorageFile?> SaveAsync(FileKind kind, string suggestedName)
+        public async Task<IOutputFile?> SaveAsync(FileKind kind, string suggestedName)
         {
             var provider = GetProvider();
-            return await provider.SaveFilePickerAsync(new FilePickerSaveOptions
+            var file = await provider.SaveFilePickerAsync(new FilePickerSaveOptions
             {
                 Title = "Guardar como",
                 SuggestedFileName = suggestedName,
@@ -36,6 +36,7 @@ namespace Espuma.Presentation.Services
                 FileTypeChoices = [kind.PickerType()],
                 ShowOverwritePrompt = true
             });
+            return file is null ? null : new StorageOutputFile(file);
         }
 
         private IStorageProvider GetProvider() =>

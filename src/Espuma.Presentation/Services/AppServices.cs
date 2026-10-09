@@ -6,10 +6,12 @@ namespace Espuma.Presentation.Services
     /// <summary>Everything the view models need, built once at startup.</summary>
     public sealed class AppServices
     {
-        public AppServices(IFileDialogService fileDialogs, Func<Uri, Task<bool>> openUri)
+        public AppServices(IFileDialogService fileDialogs, Func<Uri, Task<bool>> openUri,
+            Func<IOutputFile, Task<bool>> openFile)
         {
             FileDialogs = fileDialogs;
             OpenUri = openUri;
+            OpenFile = openFile;
             Runner = new OperationRunner(Notifications);
             PdfToImage = new PdfToImageService(Renderer);
         }
@@ -18,6 +20,7 @@ namespace Espuma.Presentation.Services
         public OperationRunner Runner { get; }
         public IFileDialogService FileDialogs { get; }
         public Func<Uri, Task<bool>> OpenUri { get; }
+        public Func<IOutputFile, Task<bool>> OpenFile { get; }
 
         public IPdfRenderer Renderer { get; } = new PdfiumRenderer();
         public IPdfMergeService Merge { get; } = new PdfMergeService();

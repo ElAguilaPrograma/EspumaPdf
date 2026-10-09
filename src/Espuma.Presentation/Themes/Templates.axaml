@@ -1,0 +1,53 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:vm="using:Espuma.Presentation.ViewModels"
+                    xmlns:th="using:Espuma.Presentation.Thumbnails"
+                    xmlns:c="using:Espuma.Presentation.Controls">
+
+  <DataTemplate x:Key="PageThumbnailTemplate" x:DataType="th:PageThumbnailViewModel">
+    <th:ThumbnailHost Classes="page" Classes.selected="{Binding IsSelected}"
+                      Classes.highlighted="{Binding IsHighlighted}">
+      <StackPanel Spacing="6">
+        <Panel Width="132" Height="{Binding DisplayHeight}">
+          <Border Classes="paper" />
+          <Image Source="{Binding Thumbnail}" Stretch="Uniform" />
+          <Border Classes="badge" IsVisible="{Binding Badge, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <TextBlock Text="{Binding Badge}" />
+          </Border>
+          <Border Classes="mark">
+            <c:Icon Data="{StaticResource Icon.Delete}" Size="26" Foreground="White" />
+          </Border>
+        </Panel>
+        <TextBlock Classes="caption" Text="{Binding PageNumber}" HorizontalAlignment="Center" />
+      </StackPanel>
+    </th:ThumbnailHost>
+  </DataTemplate>
+
+  <DataTemplate x:Key="FileItemTemplate" x:DataType="vm:SelectedFile">
+    <Border Classes="fileitem">
+      <Grid ColumnDefinitions="Auto,Auto,*,Auto">
+        <c:Icon Data="{StaticResource Icon.Grip}" Size="16" Foreground="{DynamicResource TextMutedBrush}"
+                VerticalAlignment="Center" ToolTip.Tip="Arrastra para cambiar el orden" />
+        <Border Grid.Column="1" Classes="filethumb">
+          <Panel>
+            <c:Icon Data="{StaticResource Icon.File}" Size="18" Foreground="{DynamicResource TextMutedBrush}"
+                    HorizontalAlignment="Center" VerticalAlignment="Center" />
+            <Image Source="{Binding Thumbnail}" Stretch="Uniform" />
+          </Panel>
+        </Border>
+        <StackPanel Grid.Column="2" Margin="12,0" VerticalAlignment="Center" Spacing="2">
+          <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+          <TextBlock Classes="caption" Text="{Binding Detail}" />
+          <TextBlock Classes="caption" Text="{Binding Problem}" Foreground="{DynamicResource DangerBrush}"
+                     IsVisible="{Binding Problem, Converter={x:Static ObjectConverters.IsNotNull}}" />
+        </StackPanel>
+        <Button Grid.Column="3" Classes="icon danger" ToolTip.Tip="Quitar" VerticalAlignment="Center"
+                Command="{Binding $parent[UserControl].((vm:ToolViewModel)DataContext).RemoveFileCommand}"
+                CommandParameter="{Binding}">
+          <c:Icon Data="{StaticResource Icon.Close}" Size="16" />
+        </Button>
+      </Grid>
+    </Border>
+  </DataTemplate>
+
+</ResourceDictionary>
